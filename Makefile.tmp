@@ -35,8 +35,10 @@ SRC_BONU_FILE= $(addprefix $(BONU_DIR), $(BONU_FILES))
 # Source files
 SRC          = $(addprefix $(SRC_DIR), $(SRC_MAND_FILE))
 SRC_BONUS    = $(addprefix $(SRC_DIR), $(SRC_BONU_FILE))
-OBJ          = $(addprefix $(OBJ_DIR), $(addsuffix .o, $(notdir $(SRC))))
-OBJ_BONUS    = $(addprefix $(OBJ_DIR), $(addsuffix .o, $(notdir $(SRC_BONUS))))
+OBJ          = $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC)))
+OBJ_BONUS    = $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC_BONUS)))
+
+OBJF 		= 	.cache_exists
 
 # Rules
 all: $(NAME)
@@ -49,10 +51,14 @@ bonus: $(OBJ) $(OBJ_BONUS)
 		@ar rcs $(NAME) $^
 		@$(ECHO) "$(YELLOW)[$(NAME_CAPS)]:\t$(ORANGE)[==========]\t$(GREEN) => Bonus files compiled!$(DEF_COLOR)\n"
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.s
-		@mkdir -p $(OBJ_DIR)
+$(OBJ_DIR)%.o: $(SRC_DIR)%.s  $(OBJF)
 		@$(CC) $(CFLAGS) $< -o $@
 		@$(ECHO) "\033[1A\033[K$< created"
+
+$(OBJF):		
+		@mkdir -p $(OBJ_DIR)
+		@mkdir -p $(OBJ_DIR)$(MAND_DIR)
+		@mkdir -p $(OBJ_DIR)$(BONU_DIR)
 
 help: ## Print help on Makefile.
 		@grep '^[^.#]\+:\s\+.*#' Makefile | \
